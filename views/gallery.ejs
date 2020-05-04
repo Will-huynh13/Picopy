@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Picopy Gallery</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="/javascripts/gallery.js"></script>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="https://kit.fontawesome.com/6fee0b6358.js" crossorigin="anonymous"></script>
+</head>
+<body id="gallery-body">
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/" id="gallery_logo"><img id="gallery_logo" src="../img/logo.png" width="100"></a>
+    </div>
+    <ul class="nav navbar-nav">
+        <li clss="nav-item">
+            <a></a>
+          </li>
+      <li class="nav-item nav-link">
+          <select name="" id="view-photos-by" class="form-control" style="">
+              <option value="all-photos">All Photos</option>
+              <%- user.username == null ? "" : '<option value="my-photos" id="my-photos-select">My Public Photos</option>' %>
+              <option value="photos-by-user" id="photos-by-user-select">Photos By User</option>
+              <option value="photos-by-filter">Photos By Filter</option>
+            </select>
+      </li>
+      <li clss="nav-item">
+          <a></a>
+        </li>
+      <li class="nav-item nav-link">
+          <select name="" id="sort-photos-by" class="form-control" style="">
+              <option value="sort-new">Newest</option>
+              <option value="sort-old">Oldest</option>
+            </select>
+      </li>
+      <li clss="nav-item">
+          <a></a>
+        </li>
+      <li class="nav-item">
+        <!-- NEED TO DISABLE THIS IF NOT LOGGED IN -->
+        <%- user.username == null ? '<a class="nav-link">Log in to view private photos</a>' : '<a class="nav-link" id="viewPrivateToggle" onclick="viewPrivate(\'' + user.username + '\')">My Private Photos</a>' %>
+      </li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right" style="color:white">
+      <li><a><span class="glyphicon glyphicon-user"style="margin-right:10px;"></span><%- user.username == null ? '' : 'Logged in as ' + user.username %></a></li>
+    </ul>
+  </div>
+</nav>
+    <body style="background-color:black; margin: 0 !important; padding-top:50px;">
+      <!-- NEED TO HANDLE IF THE USERNAME IS NOT FOUND IN THE GALLERY -->
+      <div class="modal fade" id="getUserModal" tabindex="-1" role="dialog" aria-labelledby="getUserModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="getUserModalLongTitle">Enter a username</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="usernameForm" placeholder="Enter username">
+                      </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="sortByUser()">View User's Photos</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="getFilterModal" tabindex="-1" role="dialog" aria-labelledby="getFilterModalTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">2
+                  <div class="modal-header">
+                    <!-- CAN WE CENTER THIS? -->
+                    <h5 class="modal-title" id="getFilterModalLongTitle">Choose a filter to sort by</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group container text-center">
+                          <%
+                          //Will only display filters that currently exist in the gallery.
+                          var used_filters = ["Any", "No filter"];
+                          //Loop through each photo passed in
+                          for(var i = 0; i < photo_count[0].count; i++)
+                          {
+                            //Combine them all into one array
+                            var currFilt = photo_data[i].filters.split(" ");
+                            used_filters = used_filters.concat(currFilt);
+                          }
+                          //Filter out the duplicates and the empty strings
+                          used_filters = used_filters.filter((value, index) => used_filters.indexOf(value) === index);
+                          used_filters = used_filters.filter(Boolean);
+
+                          var options = '';
+                          //Create a bunch of options for the dropdown
+                          for(var i = 0; i < used_filters.length; i++){
+                            options += '<option value="'+used_filters[i]+'">'+used_filters[i]+'</option>'
+                          }
+                          %>
+
+                          <select name="" id="filter-select" class="form-control" style="width: 200px;">
+                              <%- options %>
+                            </select>
+                        </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="sortByFilter()">View Photos With Filter</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="delay-notif">
+              <p>If you have just uploaded, it may take a minute for your photo to appear in the gallery.</p>
+              <p>Refresh if you don't see it.</p>
+            </div>
+
+    <div id="gallery-photos">
+      <!--  -->
+      <div id="fb-root"></div>
+      <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v6.0">
+      </script>
+      <div style="display:none" id="count-obj"><%- photo_count[0].count %></div>
+      <div style="display:none" id="photo-obj"><%- JSON.stringify(photo_data) %></div>
+      <div style="display:none" id="username-obj"><%- user.username %></div>
+    </body>
+</html>

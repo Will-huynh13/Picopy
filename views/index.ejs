@@ -1,0 +1,307 @@
+<!-- adopted from mozilla developer pages at: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="upload_screen.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script src="picopy.js"></script>
+  <script src="javascripts/fabric.js"></script>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="/javascripts/if.js"></script>
+  <style type="text/css">
+      form img {
+      height: 475px;
+      order: 1;
+      justify-content: center;
+    }
+    html, body {margin: 0; height: 100%; overflow: hidden}
+    /* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #222;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #fff;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+}
+  </style>
+<script src="dist/popupS.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/popupS.min.css">
+</head>
+<body>
+<div id="main" class="container">
+  <canvas id="myCanvas"></canvas>
+  <img id="final_img" name ="final_img"style="margin-top:25%" src="img/no_image2.png">
+  <div class="row">
+      <div class="col-sm-2" id="side-bar">
+        <div id="header-logo" class="row text-xs-center">
+          <!--<h1 class="display-4">Picopy</h1>-->
+          <img id="header-logo-img "src="img/logo.png" style="margin-top:12%" width="200">
+        </div>
+        <div class="row">
+            <a id="gallery-link" style="margin-bottom:5%" href="/gallery">View Gallery</a>
+        </div>
+        <div class="row list_container" style="height: 500px" id="filter-row">
+          <div class="col filters">
+            <h3 class="display-4" id="filter-title">Filters</h3>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="grayfun()" id="grayscale">Grayscale</label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="invertfun()" id="invert">Invert</label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="lightblurfun()" id="lightblur">Light Blur</label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="heavyblurfun()" id="heavyblur">Heavy Blur</label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="darkerfun1()" id="darker1">Darker</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="darkerfun2()" id="darker2">Slightly Darker</label>
+              </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="lighterfun1()" id="lighter1">Slightly Lighter</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="lighterfun2()" id="lighter2">Lighter</label>
+              </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="c1()" id="c1">60% Contrast</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="c2()" id="c2">80% Contrast</label>
+              </div>
+                <div class="form-check">
+                <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="c3()" id="c3">120% Contrast</label>
+                </div>
+                <div class="form-check">
+                <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="c4()" id="c4">140% Contrast</label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="dropshadowfun()" id="dropshadow">Drop Shadow</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="huerotate45fun()" id="huerotate45">Rotate Hue 45 Degrees</label>
+              </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="huerotate90fun()" id="huerotate90">Rotate Hue 90 Degrees</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="huerotate135fun()" id="huerotate135">Rotate Hue 135 Degrees</label>
+              </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="huerotate180fun()" id="huerotate180">Rotate Hue 180 Degrees</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="huerotate225fun()" id="huerotate225">Rotate Hue 225 Degrees</label>
+              </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="huerotate270fun()" id="huerotate270">Rotate Hue 270 Degrees</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="huerotate315fun()" id="huerotate315">Rotate Hue 315 Degrees</label>
+              </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="transparentfun()" id="transparent">Increased Transparency</label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="saturate1fun()" id="saturate1">Low Saturate</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="saturate2fun()" id="saturate2">Med Saturate</label>
+              </div>
+              <div class="form-check">
+                <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="saturate3fun()" id="saturate3">High Saturate</label>
+              </div>
+              <div class="form-check">
+                <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="saturate4fun()" id="saturate4">Extreme Saturate</label>
+              </div>
+                <div class="form-check">
+                    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="sepiafun1()" id="sepia1">Low Sepia</label>
+                </div>
+                <div class="form-check">
+                  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="sepiafun2()" id="sepia2">Med Sepia</label>
+              </div>
+              <div class="form-check">
+                <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="sepiafun3()" id="sepia3">High Sepia</label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="binarizefun()" id="binarize">Binarize</label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="updateImageDisplay()" id="edge">Edge</label>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="updateImageDisplay()" id="emboss">Emboss</label>
+      </div>
+      <div class="form-check">
+        <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="updateImageDisplay()" id="flip">Flip</label>
+    </div>
+    <div class="form-check">
+      <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="updateImageDisplay()" id="gamma">Gamma</label>
+  </div>
+  <div class="form-check">
+    <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="updateImageDisplay()" id="mosaic">Mosaic</label>
+</div>
+<div class="form-check">
+  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="updateImageDisplay()" id="posterize">Posterize</label>
+</div>
+<div class="form-check">
+  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="updateImageDisplay()" id="sharpen">Sharpen</label>
+</div>
+<div class="form-check">
+  <label class="form-check-label"><input type="checkbox" class="form-check-input" value="" onclick="updateImageDisplay()" id="solarize">Solarize</label>
+</div>
+          </div>
+        </div>
+        <div id="login-sec">
+            <%
+            loginBtn = '<button type="button" id="lgbtn" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Login</button>';
+            console.log(user)
+            %>
+          <%- user == null ? loginBtn : "Logged in as " + user.username +". <br>Not you? <a href='/logout'>Logout</a>" %>
+        </div>
+      </div>
+
+        <div class="col-sm-10" id="prev">
+          <div class="preview">
+              <img style="margin-top:25%" src="img/no_image2.png">
+          </div>
+          <div id="footer">
+              <form class="form-inline">
+                <div class="form group">
+                  <label for="image_uploads">Click here to upload an image</label>
+                  <input type="file" id="image_uploads" name="image_uploads" accept=".jpg, .jpeg, .png" >
+		<input type="hidden" id="image_canvas" name="image_canvas" value="">
+    <input type="hidden" id="imgString" name="imgString" value="">
+    <input type="hidden" id="userIdNum" name="userIdNum" value="<%=user == null ?"" : user.user_id%>">
+    <div class="form-group form-check-inline" id="private-check">
+      <input type="checkbox" id="Private" name ="Private">
+      <label for="private">Private?</label>
+    </div>
+                  </div>
+                  <%
+                  saveBtn = ' <a id="save-button" onclick="submit_canvas()" class="btn btn-primary">Save To Gallery</a>';
+                  loginBtn2 = '<button id="save-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Login To Save Photo</button>';
+                  %>
+                  <%- user == null ? loginBtn2 : saveBtn %>
+
+            </form>
+          </div>
+        </div>
+  </div>
+
+</div>
+<div class="container">
+    <div class="row">
+    <div class="col">
+    <!--<h1 class="display-1">Picopy</h1>-->
+    <img src="img/logo.png" style="margin-top:12%" width="200">
+    </div>
+    <div class="col">
+      <br>
+      <div class="float-right">
+        <%
+          loginBtn = '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Login</button>';
+          console.log(user)
+          %>
+        <%- user == null ? loginBtn : "Logged in as " + user.username + ". Not you? <a href='/logout'>Logout</a>" %>
+
+
+      </div>
+
+
+      <!-- The Modal -->
+      <div class="modal" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">User Login</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <form class="form-horizontal" action="login" method="POST">
+                <h1>Create a Picopy Account</h1>
+                        <br>
+                <div class="form-group row">
+                  <label class="control-label col-sm-2" for="username">Username:</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+                  </div>
+                        </div>
+                <div class="form-group row">
+                  <label class="control-label col-sm-2" for="pwd">Password:</label>
+                  <div class="col-sm-10">
+                    <input type="password" class="form-control" id="pwd" name="password" placeholder="Enter password">
+                  </div>
+                        </div>
+                <input type="submit" value="submit" id="submitbtn" class="btn btn-primary btn-block">
+            </form>
+
+            </div>
+
+            <a style="margin-left: 10px;"href="/register">New user? Register here.</a>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <div class="float-left">
+          </div>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <nav class="navbar navbar-expand-sm bg-light navbar-light sticky-top">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Upload</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/gallery">Gallery Page</a>
+      </li>
+
+    </ul>
+  </nav>
+
+ <!-- <form action="upload" method="POST" class="multipart/form-data">
+<div class="row">
+      <div class="col">
+        <div class="card card-block d-flex">
+          <div class="card-footer align-items-center d-flex justify-content-center">
+	<input type="hidden" name = "imgSource" id="imgSource" class="form-control" value = "returnFileSrc()">
+	<input type="hidden" name = "extName" class="form-control" value="returnFileType()">
+        <button type="submit" class="btn btn-outline-primary btn-lg">Submit to Gallery</button>
+      </div>
+      </div>
+      </div>
+    </div>
+</form>
+
+</div> -->
+  <script src="/javascripts/index.js"></script>
+</body>
+</html>
